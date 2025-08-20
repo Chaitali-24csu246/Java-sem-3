@@ -163,3 +163,45 @@ Print all loans with computed fines and total fine collected. */
         System.out.println("Total Fine Collected: " + totalFine);
     }
 }
+/*
+1) Library Micro-Lending
+Scenario: You’re prototyping a tiny library system.
+Classes to design
+•
+Book
+o
+Fields: isbn (String), title (String), author (String).
+o
+Constructor(s), getters, toString() -> "ISBN: ..., Title: ..., Author: ...".
+•
+Member
+o
+Fields: memberId (String), name (String).
+o
+Constructor(s), getters, toString().
+•
+Loan (composition)
+o
+Fields: book (Book), member (Member), daysBorrowed (int).
+o
+Method: int computeFine(int allowedDays, int perDayFine) → returns fine for overdue days (0 if within allowedDays).
+o
+toString() summarizing a loan.
+Seed rule
+•
+Let allowedDays be 10 + (sum of digits in SEED % 3).
+•
+perDayFine is ₹ 5 + (last digit in SEED if exists, else 0).
+Driver requirements
+•
+Create 5 books, 3 members (use literals).
+•
+Create an array of 6 loans (some overdue, some not).
+•
+Print all loans with computed fines and total fine collected.
+Constraints
+•
+Use only plain arrays, no ArrayList.
+•
+All fields private with getters (no public fields).
+    No scanning user input; values are literals.*/
