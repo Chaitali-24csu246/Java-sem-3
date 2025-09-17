@@ -31,7 +31,7 @@ class Workout {
 class DayLog {
     //fields
     private String dateLabel;
-    private Workout[] entries;//max 6
+    private final Workout[] entries;//max 6
     private int count;//number of elements in entries
     //constructor
     public DayLog(String dateLabel) {
@@ -68,16 +68,12 @@ mobility: minutes*1 → sum all. */
         for (int i = 0; i < count; i++) {
             Workout w = entries[i];
             switch (w.getCategory()) {
-                case "cardio":
-                    score += w.getMinutes() * 2;
-                    break;
-                case "strength":
-                    score += w.getMinutes() * 3;
-                    break;
-                case "mobility":
+                case "cardio" -> score += w.getMinutes() * 2;
+                case "strength" -> score += w.getMinutes() * 3;
+                case "mobility" -> {
                     score += w.getMinutes(); // x1
                     mobilityMinutes += w.getMinutes();
-                    break;
+                }
             }
         }
 
