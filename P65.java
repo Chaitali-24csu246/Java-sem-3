@@ -56,9 +56,9 @@ public class P65 {
     public static void main(String args[]){
         Employee[] employees=new Employee[4];
         employees[0]=new Employee(); // Default employee
-        employees[0]=new Manager("Alice", 100000, 5);
-        employees[1]=new Developer("Bob", 80000, "Java");
-        employees[2]=new Intern("Charlie", 30000, 6);
+        employees[1]=new Manager("Alice", 100000, 5);
+        employees[2]=new Developer("Bob", 80000, "Java");
+        employees[3]=new Intern("Charlie", 30000, 6);
         for(Employee e:employees){
             e.displayDetails();
             System.out.println("-----");
