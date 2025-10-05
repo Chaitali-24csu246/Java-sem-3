@@ -7,7 +7,7 @@ public class Arithmetic {
         // Arithmetic expression with operator precedence
         int result1 = a + b * c; 
         int result2 = (a + b) * c;
-        int result3 = a / b * c; /
+        int result3 = a / b * c; 
         // Complex expression combining multiple operators
         int result4 = a + b - c * a / b; 
         
