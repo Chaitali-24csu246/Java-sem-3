@@ -6,7 +6,7 @@ Show how switching to another operation requires modifying client code.*/
 
 //Tightly coupled: Classes depend heavily on each other. Changing one requires changes in others.
 
-class Calculator {//one class for all operations
+/*class Calculator {//one class for all operations
     int a,b;
     Calculator(int a, int b){
         this.a = a;
