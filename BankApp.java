@@ -1,75 +1,10 @@
-/* 
-Step 2 — throw vs throws 
-Goal: introduce a checked exception path with throws.
-
-In SmartBank, add a transfer(toAccount, amount) method that:
-
-Prints a “processing” message.
-
-Performs a small artificial delay that requires you to declare a checked exception using throws.
-
-Internally calls withdraw on the sender and deposit on the receiver.
-
-In BankApp.main, wrap a call to transfer in try/catch and handle the checked exception.
-
-Observe/Record: What compiler hint/error appears if you omit the throws in the method signature? How is this different from unchecked exceptions in Step 1?
-
-Checkpoint: You can now explain throw (create/trigger) vs throws (declare/propagate).
-
-Step 3 — Custom Checked Exception 
-Goal: model a business rule with a custom exception.
-
-Create a new class InvalidTransactionException extending Exception (checked).
-
-Update deposit and withdraw to:
-
-Throw this custom exception for non-positive amounts.
-
-Throw this custom exception for insufficient funds.
-
-Update method signatures to declare they throws this exception.
-
-In BankApp.main, add:
-
-A try/catch around a negative deposit call → print a clear message using the exception.
-
-A try/catch around a zero withdrawal call → print the message.
-
-Observe/Record: Which methods now force you to handle/declare? Why is this better than generic runtime exceptions for business rules?
-
-Checkpoint: You can use a custom checked exception and see how it enforces handling.
-
-Step 4 — Nested Try/Catch + Finally 
-Goal: show granular handling and cleanups.
-
-In BankApp.main, create a single outer try block for a transaction session.
-
-Inside it, create two inner try/catch blocks:
-
-Inner #1: Call a deposit that fails with your custom exception → catch locally and print a friendly message.
-
-Inner #2: Call transfer that fails (e.g., amount higher than balance) → catch the appropriate exception locally and print a message.
-
-After the two inner blocks, still inside the outer try, call a withdrawal that fails with your custom exception. Let it bubble to the outer catch.
-
-Add a finally block on the outer try that prints:
-
-The final balance of the main account
-
-A “transaction session complete” message
-
-Observe/Record: Which exceptions were handled locally vs bubbled up? Did the finally block execute regardless of failures?
-
-Checkpoint: You’ve demonstrated nested handling, propagation, and finally.
-
-Optional Stretch (if you finish early)
-Add a safeTransfer wrapper that calls transfer and catches any exception internally, printing a single “Transfer failed” line.
-
-Replace a specific catch with a multi-catch that handles two unrelated exception types in one block.
-
-Print the exception class name and a short tip (“Try a smaller amount”) for better UX.
- */
+//step 3
+class InvalidTransactionException extends Exception{//custom exception
+    public InvalidTransactionException(String message){
+        super(message);
+    }}
 class SmartBank{
+    //step 1
     String holdername;
     double balance;
     SmartBank(String name, double b){
@@ -77,46 +12,65 @@ class SmartBank{
         holdername=name;
         balance=b;
     }
-    void deposit(double amount){
-        if(amount<0) throw new IllegalArgumentException("Cannot deposit a negativ e amount");
+    void deposit(double amount) throws InvalidTransactionException{
+        //step 3 change
+        //if(amount<0) throw new IllegalArgumentException("Cannot deposit a negativ e amount");
+        if(amount<0) throw new InvalidTransactionException("Cannot deposit a negative amount");
         balance+=amount;
         System.out.println("Deposited "+amount+" New balance: "+balance);
         
     }
-    void withdraw(double amount){
-        if(amount<0) throw new IllegalArgumentException("Cannot withdraw a negative amount");
-        if(amount>balance) throw new IllegalArgumentException("Insufficient funds");
+    void withdraw(double amount) throws InvalidTransactionException{
+        //if(amount<0) throw new IllegalArgumentException("Cannot withdraw a negative amount");
+        //if(amount>balance) throw new IllegalArgumentException("Insufficient funds");
+        //step 3 change
+        if(amount<0) throw new InvalidTransactionException("Cannot withdraw a negative amount");
+        if(amount>balance) throw new InvalidTransactionException("Insufficient funds");
         balance-=amount;
         System.out.println("Withdrew "+amount+" New balance: "+balance);
     }
-    //transfer
-    void transfer(SmartBank toAccount, double amount) throws InterruptedException {
+    //transfer step 2
+    //check thread sleep 
+    //check logic again at home
+    //throw interrupted exception in this method
+    void transfer(SmartBank toAccount, double amount) throws InterruptedException, InvalidTransactionException {
+        //manually throw interruptedexception here if withdrawal > balance interrupted exception throw
+        if(amount>this.balance) throw new InterruptedException("Insufficient funds for transfer., interrupting transfer.");
         System.out.println("Processing transfer of " + amount + " to " + toAccount.holdername);
-        Thread.sleep(50000); // artificial delay
+        Thread.sleep(500); // artificial delay
         this.withdraw(amount);
         toAccount.deposit(amount);
         System.out.println("Transfer complete.");
     }
-
 }
 public class BankApp {
     public static void main(String []args){
-        SmartBank a1=new SmartBank("Chaitali",9999999);
+        //step 1
+        SmartBank a1=new SmartBank("Chaitali",9999999);//valid so no try catch
         try{
-        SmartBank a2=new SmartBank("Vasvi",-9999);}
+        SmartBank a2 = new SmartBank("Vasvi",-9999);}
+
         catch(IllegalArgumentException e){
             System.out.println("Account creation failed: "+e.getMessage());
         }   
+        try{
         a1.deposit(1000);
         a1.withdraw(500);
+        }//catch(IllegalArgumentException e){
+        catch(InvalidTransactionException e){
+            System.out.println("Transaction failed: "+e.getMessage());
+        }
         try{
             a1.deposit(-100);
-        }catch(IllegalArgumentException e){
+        }//catch(IllegalArgumentException e){
+        catch(InvalidTransactionException e){
             System.out.println("Deposit failed: "+e.getMessage());      
         }
         try{
             a1.withdraw(20000);
-        }catch(IllegalArgumentException e){
+
+        }//catch(IllegalArgumentException e){
+        catch(InvalidTransactionException e){
             System.out.println("Withdrawal failed: "+e.getMessage());}
        /*  try {
             System.out.println ("Can we add to an invalid account?");
@@ -125,22 +79,62 @@ public class BankApp {
         } catch (Exception e) {
         }*/
         //Transfer implementation
+        //step 2
         SmartBank a3=new SmartBank("Vasvi",58900);
         try{
             a1.transfer(a3,2000);
-        }catch(IllegalArgumentException e){
+        }catch(InvalidTransactionException e){
             System.out.println("Transfer failed: "+e.getMessage());
         }catch(InterruptedException e){
             System.out.println("Transfer interrupted: "+e.getMessage());    }
         //transfer where exception called in transfer interruptedexception 
         try{
             a1.transfer(a3,2000000000);
-        }catch(IllegalArgumentException e){
+        }catch(InvalidTransactionException e){
             System.out.println("Transfer failed: "+e.getMessage());
         }catch(InterruptedException e){
             System.out.println("Transfer interrupted: "+e.getMessage());    }
         //nested try catch and finally
-        
-    }
+        //add a loop that keeps using transfer continuously until interruptedexception is thrown
+        //use thread sleep to simulate delay
 
+        //step 3
+        try {
+            throw new InvalidTransactionException("This is an invalid transaction");  
+        }
+        catch (InvalidTransactionException  ex) {
+            System.out.println("Caught");  
+            System.out.println(ex.getMessage());  
+
+    }
+    //step 4
+    /*
+     * try{
+     * try catch
+     * try catch} catch
+     * finall;y
+     */
+    try{//main try 
+        //1
+        try{
+            a1.deposit(-500);
+        }catch(InvalidTransactionException e){
+            System.out.println("Inner Catch 1 Deposit failed: "+e.getMessage());
+        }
+        //2
+        try{
+            a1.transfer(a3,999999999);
+        }catch(InvalidTransactionException e){
+            System.out.println("Inner Catch 2 Transfer failed: "+e.getMessage());
+        }catch(InterruptedException e){
+            System.out.println("Inner Catch 2 Transfer interrupted: "+e.getMessage());
+        }} catch(Exception e){//main catch
+            System.out.println("Outer Catch Transaction session ended with exception: "+e.getMessage());
+        }finally{
+            System.out.println("Final balance of main Account :" + a1.balance) ;  
+            System.out.println("Transaction session ended");
+         }
+
+
+}
 }
