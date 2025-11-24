@@ -13,6 +13,7 @@ public class StringSwap {
             temp = charArray[i];
             charArray[i] = charArray[i+1];
             charArray[i+1] = temp;      
+            //demo edit
         }
     }
 }
