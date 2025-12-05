@@ -44,6 +44,7 @@ class SmartBank{
     }
 }
 public class BankApp {
+    
     public static void main(String []args){
         //step 1
         SmartBank a1=new SmartBank("Chaitali",9999999);//valid so no try catch
